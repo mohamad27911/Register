@@ -1,16 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import WelcomeImage2 from '../../assets/Welcom2.jpg';
 import { useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 // Inline style for gradient background
-const gradientBackground = {
+const gradientBackground :React.CSSProperties= {
   background: '#191919',
 };
 
 // Base button styles
-const buttonStyles = {
+const buttonStyles:React.CSSProperties = {
   background: '#191919',
   color: '#BD8F4D',
   padding: '0.5rem 1rem',
@@ -23,7 +23,7 @@ const buttonStyles = {
 };
 
 // Hover styles for button
-const buttonHoverStyles = {
+const buttonHoverStyles :React.CSSProperties= {
   background: '#BD8F4D',
   color: '#191919',
 };
@@ -37,9 +37,11 @@ function SignUp() {
     formState: { errors, isSubmitting },
     reset,
     getValues
-  } = useForm();
+  } = useForm<FieldValues>();
 
   const onsubmit = async (data: FieldValues) => {
+    console.log(data);
+    
     await new Promise((res) => setTimeout(res, 1000))
     reset();
   }
@@ -77,7 +79,11 @@ function SignUp() {
                   type="text"
                   placeholder="Name"
                 />
-                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+             {errors.name?.message && (
+  <p className="text-red-500 text-xs mt-1">
+    {errors.name.message as string}
+  </p>
+)}
 
               </div>
               <div className="mb-4">
@@ -95,8 +101,11 @@ function SignUp() {
                   type="email"
                   placeholder="Email"
                 />
-                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-
+               {errors.email && (
+                  <p className='text-red-500 text-xs mt-1'>
+                    {errors.email?.message as unknown as string}
+                  </p>
+                )}{' '}
               </div>
               <div className="mb-4">
                 <label className="block text-black text-sm font-bold mb-2" htmlFor="password">
@@ -116,8 +125,11 @@ function SignUp() {
                   type="password"
                   placeholder="Password"
                 />
-                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-
+                {errors.password && (
+                  <p className='text-red-500 text-xs mt-1'>
+                    {errors.password?.message as unknown as string}
+                  </p>
+                )}
               </div>
               <div className="mb-4">
                 <label className="block text-black text-sm font-bold mb-2" htmlFor="password_confirmation">
@@ -135,7 +147,11 @@ function SignUp() {
                   type="password"
                   placeholder="Confirm Password"
                 />
-                {errors.password_confirmation && <p className="text-red-500 text-xs mt-1">{errors.password_confirmation.message}</p>}
+             {errors.password_confirmation?.message && (
+  <p className="text-red-500 text-xs mt-1">
+    {errors.password_confirmation.message as string}
+  </p>
+)}
 
               </div>
               <div className="mb-4">
