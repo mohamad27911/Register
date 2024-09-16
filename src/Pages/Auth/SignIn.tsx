@@ -1,7 +1,8 @@
 import WelcomeImage2 from '../../assets/Welcome2.jpg'
 import { useState } from 'react'
-import { FieldValues, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom' // Import Link from react-router-dom
+import { login } from '../Api'
 
 // Inline style for gradient background
 const gradientBackground = {
@@ -27,6 +28,11 @@ const buttonHoverStyles: React.CSSProperties = {
   color: '#191919'
 }
 
+interface SignInFormData {
+  email: string;
+  password: string;
+}
+
 function SignIn () {
   const [hover, setHover] = useState<boolean>(false)
 
@@ -35,15 +41,17 @@ function SignIn () {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset
-  } = useForm<FieldValues>()
+  } = useForm<SignInFormData>()
 
-  const onsubmit = async (data: FieldValues) => {
-    console.log(data)
-
-    await new Promise(res => setTimeout(res, 1000))
-    reset()
-  }
-
+  const onSubmit = async (data: { email: string; password: string }) => {
+    try {
+      const response = await login(data);
+      console.log('Login successful:', response.data);
+    } catch (error) {
+      console.error('Login error:', error);
+    }
+    reset();
+  };
   return (
     <div
       className='flex items-center justify-center min-h-screen py-10 sm:py-40'
@@ -69,7 +77,7 @@ function SignIn () {
               Welcome back! Please enter your email and password to access your
               account.
             </p>
-            <form onSubmit={handleSubmit(onsubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className='mb-4'>
                 <label
                   className='block text-gray-700 text-sm font-bold mb-2'

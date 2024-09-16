@@ -1,16 +1,23 @@
-
-import WelcomeImage2 from '../../assets/Welcom2.jpg';
-import { useState } from 'react';
-import { FieldValues, useForm } from 'react-hook-form';
+import React, { useState } from 'react';
+import { useForm} from 'react-hook-form';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import WelcomeImage2 from '../../assets/Welcom2.jpg';
+import { Register } from '../Api'; // Adjust the path accordingly
 
+
+interface SignInFormData {
+  name: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+}
 // Inline style for gradient background
-const gradientBackground :React.CSSProperties= {
+const gradientBackground: React.CSSProperties = {
   background: '#191919',
 };
 
 // Base button styles
-const buttonStyles:React.CSSProperties = {
+const buttonStyles: React.CSSProperties = {
   background: '#191919',
   color: '#BD8F4D',
   padding: '0.5rem 1rem',
@@ -23,7 +30,7 @@ const buttonStyles:React.CSSProperties = {
 };
 
 // Hover styles for button
-const buttonHoverStyles :React.CSSProperties= {
+const buttonHoverStyles: React.CSSProperties = {
   background: '#BD8F4D',
   color: '#191919',
 };
@@ -36,15 +43,28 @@ function SignUp() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-    getValues
-  } = useForm<FieldValues>();
+    getValues,
+  } = useForm<SignInFormData>();
 
-  const onsubmit = async (data: FieldValues) => {
-    console.log(data);
-    
-    await new Promise((res) => setTimeout(res, 1000))
-    reset();
-  }
+  const onSubmit = async (data: {
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+  }) => {
+    try {
+      await Register({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        password_confirmation: data.password_confirmation,
+    });
+      console.log('Registration successful');
+    } catch (error) {
+      console.error('Registration error:', error);
+    }
+    reset(); 
+  };
 
   return (
     <div
@@ -52,9 +72,6 @@ function SignUp() {
       style={gradientBackground}
     >
       <div className="flex flex-col lg:flex-row w-10/12 lg:w-8/12 bg-white rounded-xl mx-auto shadow-lg overflow-hidden">
-
-
-
         {/* Form Container */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
           <div className="pb-20 px-8 pt-10 mb-4 w-full max-w-sm">
@@ -63,15 +80,14 @@ function SignUp() {
               Join us today! Create an account to start exploring our services and enjoy a personalized experience.
             </p>
 
-            <form onSubmit={handleSubmit(onsubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-4">
                 <label className="block text-black text-sm font-bold mb-2" htmlFor="name">
                   Name
                 </label>
                 <input
-                  {...register("name", {
-                    required: "This field is required",
-
+                  {...register('name', {
+                    required: 'This field is required',
                   })}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
                   id="name"
@@ -79,21 +95,19 @@ function SignUp() {
                   type="text"
                   placeholder="Name"
                 />
-             {errors.name?.message && (
-  <p className="text-red-500 text-xs mt-1">
-    {errors.name.message as string}
-  </p>
-)}
-
+                {errors.name?.message && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.name.message as string}
+                  </p>
+                )}
               </div>
               <div className="mb-4">
                 <label className="block text-black text-sm font-bold mb-2" htmlFor="email">
                   Email
                 </label>
                 <input
-                  {...register("email", {
-                    required: "This field is required",
-
+                  {...register('email', {
+                    required: 'This field is required',
                   })}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
                   id="email"
@@ -101,23 +115,23 @@ function SignUp() {
                   type="email"
                   placeholder="Email"
                 />
-               {errors.email && (
+                {errors.email && (
                   <p className='text-red-500 text-xs mt-1'>
                     {errors.email?.message as unknown as string}
                   </p>
-                )}{' '}
+                )}
               </div>
               <div className="mb-4">
                 <label className="block text-black text-sm font-bold mb-2" htmlFor="password">
                   Password
                 </label>
                 <input
-                  {...register("password", {
-                    required: "Password is required",
+                  {...register('password', {
+                    required: 'Password is required',
                     minLength: {
                       value: 8,
-                      message: "Password must be at least 8 characters!"
-                    }
+                      message: 'Password must be at least 8 characters!',
+                    },
                   })}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
                   id="password"
@@ -136,10 +150,10 @@ function SignUp() {
                   Confirm Password
                 </label>
                 <input
-                  {...register("password_confirmation", {
-                    required: "Confirm Password is required",
+                  {...register('password_confirmation', {
+                    required: 'Confirm Password is required',
                     validate: (value: string) =>
-                      value === getValues("password") || "Passwords must match!"
+                      value === getValues('password') || 'Passwords must match!',
                   })}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
                   id="password_confirmation"
@@ -147,12 +161,11 @@ function SignUp() {
                   type="password"
                   placeholder="Confirm Password"
                 />
-             {errors.password_confirmation?.message && (
-  <p className="text-red-500 text-xs mt-1">
-    {errors.password_confirmation.message as string}
-  </p>
-)}
-
+                {errors.password_confirmation?.message && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.password_confirmation.message as string}
+                  </p>
+                )}
               </div>
               <div className="mb-4">
                 <button
@@ -161,8 +174,7 @@ function SignUp() {
                   onMouseEnter={() => setHover(true)}
                   onMouseLeave={() => setHover(false)}
                   type="submit"
-                  disabled={isSubmitting
-                  }
+                  disabled={isSubmitting}
                 >
                   Create Account
                 </button>
@@ -173,7 +185,6 @@ function SignUp() {
                   to="/signin"
                   className="font-bold"
                   style={{ color: '#BD8F4D' }}
-                // Updated path
                 >
                   Sign In
                 </Link>
@@ -192,7 +203,6 @@ function SignUp() {
           {/* Background image is set here */}
         </div>
       </div>
-
     </div>
   );
 }
